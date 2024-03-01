@@ -1,26 +1,15 @@
 package com.xbhog;
 
 import cn.hutool.core.io.resource.ResourceUtil;
-import com.xbhog.binding.MapperProxyFactory;
-import com.xbhog.binding.MapperRegistry;
-import com.xbhog.session.DefaultSqlSession;
-import com.xbhog.session.DefaultSqlSessionFactory;
-import com.xbhog.session.SqlSession;
-import com.xbhog.session.SqlSessionFactory;
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.InputSource;
 
-import java.io.BufferedReader;
 import java.io.Reader;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Unit test for simple App.
