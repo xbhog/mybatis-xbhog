@@ -1,6 +1,7 @@
 package com.xbhog.binding;
 
 import cn.hutool.core.lang.ClassScanner;
+import com.xbhog.session.Configuration;
 import com.xbhog.session.SqlSession;
 
 import java.util.HashMap;
@@ -14,37 +15,50 @@ import java.util.Set;
  * @date 2024/2/25
  */
 public class MapperRegistry {
+    private Configuration config;
 
-    private final Map<Class<?>,MapperProxyFactory<?>> interfaceMaps = new HashMap<>();
+    public MapperRegistry(Configuration config) {
+        this.config = config;
+    }
 
-    public <T> T getMapper(Class<T> type, SqlSession sqlSession){
-        MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) interfaceMaps.get(type);
-        if(Objects.isNull(mapperProxyFactory)){
+    /**
+     * 将已添加的映射器代理加入到 HashMap
+     */
+    private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
+
+    public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+        final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
+        if (mapperProxyFactory == null) {
             throw new RuntimeException("Type " + type + " is not known to the MapperRegistry.");
         }
-        return (T)mapperProxyFactory.newInstance(sqlSession);
-    }
-
-    public void addMapper(String packageName){
-        Set<Class<?>> scanPackage = ClassScanner.scanPackage(packageName);
-        scanPackage.forEach(clazz -> {
-            addMappers(clazz);
-        });
-    }
-
-    private void addMappers(Class<?> clazz) {
-        if(clazz.isInterface()){
-            //判断是否重复添加
-            if(haveInterface(clazz)){
-                throw new RuntimeException("Type " + clazz + " is already known to the MapperRegistry.");
-            }
+        try {
+            return mapperProxyFactory.newInstance(sqlSession);
+        } catch (Exception e) {
+            throw new RuntimeException("Error getting mapper instance. Cause: " + e, e);
         }
-        // 注册映射器代理工厂
-        interfaceMaps.put(clazz, new MapperProxyFactory<>(clazz));
     }
 
-    private boolean haveInterface(Class<?> clazz) {
-        return interfaceMaps.containsKey(clazz);
+    public <T> void addMapper(Class<T> type) {
+        /* Mapper 必须是接口才会注册 */
+        if (type.isInterface()) {
+            if (hasMapper(type)) {
+                // 如果重复添加了，报错
+                throw new RuntimeException("Type " + type + " is already known to the MapperRegistry.");
+            }
+            // 注册映射器代理工厂
+            knownMappers.put(type, new MapperProxyFactory<>(type));
+        }
+    }
+
+    public <T> boolean hasMapper(Class<T> type) {
+        return knownMappers.containsKey(type);
+    }
+
+    public void addMappers(String packageName) {
+        Set<Class<?>> mapperSet = ClassScanner.scanPackage(packageName);
+        for (Class<?> mapperClass : mapperSet) {
+            addMapper(mapperClass);
+        }
     }
 
 }

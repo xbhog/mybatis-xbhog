@@ -1,11 +1,16 @@
 package com.xbhog;
 
 import cn.hutool.core.io.resource.ResourceUtil;
+import com.xbhog.session.SqlSession;
+import com.xbhog.session.SqlSessionFactory;
+import com.xbhog.session.SqlSessionFactoryBuilder;
 import junit.framework.TestCase;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 import java.io.Reader;
@@ -16,63 +21,22 @@ import java.util.List;
  */
 
 public class AppTest extends TestCase {
+
+    private Logger logger = LoggerFactory.getLogger(AppTest.class);
     /**
      * Rigourous Test :-)
      */
     public void testApp() throws DocumentException {
-        // xml文件内容转换为字符串流
+        // 1. 从SqlSessionFactory中获取SqlSession
         Reader reader = ResourceUtil.getUtf8Reader("mybatis-config-datasource.xml");
-
-        // 从字符串流中读取并创建XML Document对象
-        SAXReader saxReader = new SAXReader();
-        Document document = saxReader.read(new InputSource(reader));
-
-        // 获取XML文档的根元素
-        Element rootElement = document.getRootElement();
-
-        // 获取根元素下的“mappers”子元素
-        Element mappersElement = rootElement.element("mappers");
-
-        // 遍历所有“mapper”子元素
-        List<Element> mapperElements = mappersElement.elements("mapper");
-        for (Element mapperElement : mapperElements) {
-            // 获取当前“mapper”元素的“resource”属性值
-            String mapperResource = mapperElement.attributeValue("resource");
-            System.out.println("正在查看资源：" + mapperResource);
-
-            // 依据“resource”属性加载对应的XML文件内容为字符串流
-            Reader mapperReader = ResourceUtil.getUtf8Reader(mapperResource);
-
-            // 创建新的SAXReader实例以读取mapper文件中的XML内容
-            SAXReader saxReaderForMapper = new SAXReader();
-
-            // 从mapper的字符串流中创建新的Document对象
-            Document mapperDocument = saxReaderForMapper.read(new InputSource(mapperReader));
-
-            // 获取mapper文件的根元素
-            Element mapperRootElement = mapperDocument.getRootElement();
-
-            // 遍历mapper文件中所有的“select”元素
-            List<Element> selectNodes = mapperRootElement.elements("select");
-            for (Element selectElement : selectNodes) {
-                // 获取“select”元素的各个属性值
-                String selectId = selectElement.attributeValue("id");
-                String parameterType = selectElement.attributeValue("parameterType");
-                String resultType = selectElement.attributeValue("resultType");
-                String sqlStatement = selectElement.getText();
-
-                // 输出“select”元素的属性及SQL语句
-                System.out.println("相关SQL映射信息：ID=" + selectId + "；参数类型=" + parameterType +
-                        "；结果类型=" + resultType + "；SQL语句=" + sqlStatement);
-            }
-        }
-
-
-        /*MapperRegistry mapperRegistry = new MapperRegistry();
-        mapperRegistry.addMapper("com.xbhog");
-        DefaultSqlSessionFactory sqlSessionFactory = new DefaultSqlSessionFactory(mapperRegistry);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
         SqlSession sqlSession = sqlSessionFactory.openSession();
-        IUserDao user = sqlSession.getMapper(IUserDao.class);
-        System.out.println("输出的信息："+user);*/
+
+        // 2. 获取映射器对象
+        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+
+        // 3. 测试验证
+        String res = userDao.queryUserInfoById("10001");
+        logger.info("测试结果：{}", res);
     }
 }
