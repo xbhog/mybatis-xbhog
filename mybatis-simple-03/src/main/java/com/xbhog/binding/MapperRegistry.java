@@ -34,7 +34,7 @@ public class MapperRegistry {
         try {
             return mapperProxyFactory.newInstance(sqlSession);
         } catch (Exception e) {
-            throw new RuntimeException("Error getting mapper instance. Cause: " + e, e);
+            throw new RuntimeException("Error getting mapper instance. Cause: " +e);
         }
     }
 

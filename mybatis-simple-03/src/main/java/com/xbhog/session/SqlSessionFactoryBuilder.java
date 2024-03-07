@@ -1,5 +1,7 @@
 package com.xbhog.session;
 
+import com.xbhog.binding.MapperMethod;
+import com.xbhog.binding.MapperProxyFactory;
 import com.xbhog.builder.xml.XmlConfigBuilder;
 import com.xbhog.session.defaults.DefaultSqlSessionFactory;
 

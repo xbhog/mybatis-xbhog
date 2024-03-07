@@ -1,6 +1,6 @@
 package com.xbhog.session.defaults;
 
-import com.xbhog.binding.MapperRegistry;
+
 import com.xbhog.session.Configuration;
 import com.xbhog.session.SqlSession;
 import com.xbhog.session.SqlSessionFactory;

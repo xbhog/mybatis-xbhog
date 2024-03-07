@@ -48,7 +48,7 @@ public class XmlConfigBuilder extends BaseBuilder {
         try {
             mapperElement(root.element("mappers"));
         } catch (Exception e) {
-            throw new RuntimeException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
+            throw new RuntimeException("Error parsing SQL Mapper Configuration. Cause: " + e);
         }
         return configuration;
     }

@@ -26,7 +26,7 @@ public class AppTest extends TestCase {
     /**
      * Rigourous Test :-)
      */
-    public void testApp() throws DocumentException {
+    public void testApp() throws Exception {
         // 1. 从SqlSessionFactory中获取SqlSession
         Reader reader = ResourceUtil.getUtf8Reader("mybatis-config-datasource.xml");
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
