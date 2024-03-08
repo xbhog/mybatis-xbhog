@@ -4,6 +4,8 @@ import com.xbhog.mapping.MappedStatement;
 import com.xbhog.mapping.SqlCommandType;
 import com.xbhog.session.Configuration;
 import com.xbhog.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
@@ -46,7 +48,10 @@ public class MapperMethod {
         //方法类型
         private final SqlCommandType sqlCommandType;
 
+        private final Logger logger = LoggerFactory.getLogger(SqlCommand.class);
+
         public SqlCommand(Configuration configuration, Class<?> mapperInterface, Method method) {
+            logger.debug("查看当前方法【SqlCommand】参数传进来的信息：接口信息：{}，方法信息：{}",mapperInterface,method);
             //获取MappedStatement
             String mid = mapperInterface.getName() + "." + method.getName();
             MappedStatement mappedStatements = configuration.getMappedStatements(mid);

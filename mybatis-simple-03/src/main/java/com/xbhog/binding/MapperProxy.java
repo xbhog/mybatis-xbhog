@@ -1,6 +1,8 @@
 package com.xbhog.binding;
 
 import com.xbhog.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
@@ -24,6 +26,9 @@ public class MapperProxy<T> implements InvocationHandler,Serializable {
 
     private final Map<Method, MapperMethod> methodCache;
 
+    private Logger logger = LoggerFactory.getLogger(MapperProxy.class);
+
+
     public MapperProxy(SqlSession sqlSession, Class<T> mapperInterface, Map<Method, MapperMethod> methodCache) {
         this.sqlSession = sqlSession;
         this.mapperInterface = mapperInterface;
@@ -36,8 +41,6 @@ public class MapperProxy<T> implements InvocationHandler,Serializable {
             return method.invoke(this,args);
         }else{
             //需要匹配的是类名+方法名
-            //return "您已经被代理了,代理方法："+sqlSession.get(mapperInterface.getName()+"."+method.getName());
-            //todo 具体接口实现的方式
             final MapperMethod mapperMethod = cachedMapperMethod(method);
             return mapperMethod.execute(sqlSession, args);
         }

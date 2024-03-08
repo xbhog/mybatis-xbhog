@@ -6,7 +6,7 @@ import com.xbhog.session.Configuration;
  * @author 衣立君
  * @date 2024/03/01 16:15
  **/
-public class BaseBuilder {
+public abstract class BaseBuilder {
 
     protected final Configuration configuration;
 
